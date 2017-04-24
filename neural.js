@@ -10,6 +10,9 @@ var methods = {
     },
     mod: function(a, b){
         return a % b * 10;
+    },
+    invert: function(a, b){
+        return Math.abs(a * -b);
     }
 };
 
@@ -76,4 +79,5 @@ module.exports = function(networkSettings){
     network.neurons = neurons.slice(Object.keys(inputs).length);
 
     return network;
-}
+};
+module.exports.methods = Object.keys(methods);

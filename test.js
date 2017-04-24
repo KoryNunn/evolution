@@ -22,7 +22,7 @@ var inputs = {
 function createConnections(maxConnections, maxIndex){
     var result = [];
 
-    var connections = Math.max(parseInt(Math.random() * maxConnections), Object.keys(inputs).length);
+    var connections = Math.max(parseInt((Math.random() * maxConnections) % maxConnections), Object.keys(inputs).length);
 
     while(connections--){
         result.push(parseInt(Math.random() * maxIndex));
@@ -31,7 +31,7 @@ function createConnections(maxConnections, maxIndex){
     return result;
 }
 
-var methods = ['add', 'multiply', 'power', 'mod'];
+var methods = neural.methods;
 
 function randomNeurons(){
     var neurons = [];
@@ -53,7 +53,7 @@ for(var i = 0; i < 20; i++){
 
 function createBug(previousNeuronSettings){
     var bug = neural({
-        mutation: 0.001,
+        mutation: 0.0005,
         inputs: inputs,
         outputs: {
             thrust: true
@@ -86,13 +86,13 @@ var innerRuns = 1;
 var bestBug;
 function gameLoop(){
     ticks++;
-    if(bugs.length < 10){
+    if(bugs.length < 20){
         bugs.push(createBug(randomNeurons()));
     }
 
     map.shift();
 
-    map.push(Math.random() < bugs.length / 1000);
+    map.push(Math.random() < bugs.length / 2000);
 
     bugs = bugs.reduce(function(survivors, bug){
         bug.age++;
