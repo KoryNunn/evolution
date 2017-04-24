@@ -13,12 +13,14 @@ canvas.height = renderHeight;
 canvas.width = renderWidth;
 
 module.exports = function(state){
+    var currentBestBug = state.bugs.reduce(function(result, bug){
+        return bug.age > result.age ? bug : result;
+    }, state.bugs[0]);
+
     stats.textContent = [
         'Ticks: ' + state.ticks,
         'Bugs: ' + state.bugs.length,
-        'Max Current Age: ' + state.bugs.reduce(function(result, bug){
-            return Math.max(bug.age, result);
-        }, 0),
+        'Max Current Age: ' + currentBestBug.age,
         'Max Age: ' + state.bestBug.age,
         'Best Bugs Brain: ' + JSON.stringify(state.bestBug.neurons.map(function(neuron){
             return neuron.settings;
@@ -42,8 +44,11 @@ module.exports = function(state){
         context.fillRect(bug.distance, renderHeight - 10 - (bug.height * 10), 10, 10);
     });
 
-    context.fillStyle = 'hsl(' + (state.bestBug.age / 20).toString() + ', 100%, 30%)';
+    context.fillStyle = 'hsla(' + (state.bestBug.age / 20).toString() + ', 100%, 30%, 0.3)';
     context.fillRect(state.bestBug.distance, renderHeight - 10 - (state.bestBug.height * 10), 10, 10);
+
+    context.fillStyle = 'hsl(' + (currentBestBug.age / 20).toString() + ', 100%, 30%)';
+    context.fillRect(currentBestBug.distance, renderHeight - 10 - (currentBestBug.height * 10), 10, 10);
 
     context.closePath();
 };
