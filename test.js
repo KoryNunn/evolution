@@ -63,7 +63,8 @@ function createBug(previousNeuronSettings){
         mutation: 0.0005,
         inputs: inputs,
         outputs: {
-            thrust: true
+            thrustX: true,
+            thrustY: true
         },
         previousNeuronSettings: previousNeuronSettings
     });
@@ -71,7 +72,8 @@ function createBug(previousNeuronSettings){
     bug.age = 0;
     bug.energy = 1;
     bug.height = 0;
-    bug.thrust = 0;
+    bug.thrustX = 0;
+    bug.thrustY = 0;
     bug.distance = 0;
     bug.distFromDot = -1;
 
@@ -95,7 +97,7 @@ var bugs = [];
 var renderer = require('./render');
 
 var ticks = 0;
-var innerRuns = 1;
+var looping;
 var bestBug;
 function gameLoop(){
     ticks++;
@@ -110,7 +112,7 @@ function gameLoop(){
 
     bugs = bugs.reduce(function(survivors, bug){
         bug.age++;
-        bug.distance++;
+        bug.distance += bug.thrustX + 1;
 
         if(!bestBug || bug.age > bestBug.age){
             simSettings.realtime = true;
@@ -121,7 +123,7 @@ function gameLoop(){
             bug.distance = 0;
         }
 
-        if(bug.distance && !(bug.distance % 111) && bug.age > 300){
+        if(bug.age && !(bug.age % 111) && bug.age > 300){
             survivors.push(createChild(bug));
         }
 
@@ -136,32 +138,49 @@ function gameLoop(){
         survivors.push(bug);
 
         //fall
-        bug.height += bug.thrust;
+        bug.height += bug.thrustY * 2;
         bug.height = Math.max(0, bug.height -= 0.5);
         var mapPosition = parseInt(bug.distance / 10);
         bug.dotPositions = map.slice(mapPosition, mapPosition + 20);
         bug.onDot = bug.dotPositions[0];
 
-        if(!bug.height && bug.energy > 0.2){
-            var thrust = bug.outputs.thrust();
-            bug.thrust += thrust * bug.energy * 1.5;
-            bug.energy = Math.max(0, bug.energy - bug.thrust);
+        if(!bug.height){
+            if(bug.energy > 0.2){
+                var thrustY = bug.outputs.thrustY();
+                bug.thrustY += Math.min(thrustY, bug.energy);
+                bug.energy = Math.max(0, bug.energy - bug.thrustY);
+
+                var thrustX = bug.outputs.thrustX();
+                bug.thrustX += Math.min(thrustX, bug.energy);
+                bug.energy = Math.max(0, bug.energy - bug.thrustX);
+            }
+            bug.energy = Math.min(1, bug.energy + 0.1);
         }
-        bug.energy = Math.min(1, bug.energy + 0.047);
-        if(bug.thrust > 0){
-            bug.thrust -= 0.1;
+        if(bug.thrustY > 0){
+            bug.thrustY -= 0.1;
+        }
+        if(bug.thrustX > 0.1 || bug.thrustX < -0.1){
+            bug.thrustX *= 0.9;
         }
 
         return survivors;
     }, []);
 
+    if(looping){
+        return;
+    }
+
     if(!simSettings.realtime){
-        if(innerRuns--){
+        looping = true;
+        var start = Date.now();
+        while(Date.now() - start < 50){
             gameLoop();
-        }else{
-            innerRuns = 1000;
-            setTimeout(gameLoop, 0);
+            if(simSettings.realtime){
+                break;
+            }
         }
+        looping = false;
+        setTimeout(gameLoop, 0);
         return;
     }
 

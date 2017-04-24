@@ -20,7 +20,7 @@ module.exports = function(state){
     stats.textContent = [
         'Ticks: ' + state.ticks,
         'Bugs: ' + state.bugs.length,
-        'Max Current Age: ' + currentBestBug.age,
+        'Max Current Age: ' + currentBestBug ? currentBestBug.age : 'Nothing alive',
         'Max Age: ' + state.bestBug.age,
         'Best Bugs Brain: ' + JSON.stringify(state.bestBug.neurons.map(function(neuron){
             return neuron.settings;
@@ -47,8 +47,10 @@ module.exports = function(state){
     context.fillStyle = 'hsla(' + (state.bestBug.age / 20).toString() + ', 100%, 30%, 0.3)';
     context.fillRect(state.bestBug.distance, renderHeight - 10 - (state.bestBug.height * 10), 10, 10);
 
-    context.fillStyle = 'hsl(' + (currentBestBug.age / 20).toString() + ', 100%, 30%)';
-    context.fillRect(currentBestBug.distance, renderHeight - 10 - (currentBestBug.height * 10), 10, 10);
+    if(currentBestBug){
+        context.fillStyle = 'hsl(' + (currentBestBug.age / 20).toString() + ', 100%, 30%)';
+        context.fillRect(currentBestBug.distance, renderHeight - 10 - (currentBestBug.height * 10), 10, 10);
+    }
 
     context.closePath();
 };

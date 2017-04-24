@@ -1,1 +1,32 @@
+<style type="text/css">
+    canvas{
+        border: solid 1px black;
+    }
+</style>
+<h1>Evolution</h1>
+<p>
+Dodgy neural-net implementation.
+
+Red dots (bugs) get inputs fed to 20 or so neurons.
+Neurons take an average of a selection of other neurons,
+apply a modifyer and return the result.
+Bugs have two output neurons, which feed 'thrustX' and 'thrustY'.
+
+The sim will spawn either random bugs or 'best ever' children, at a 50/50 ratio, until there are at least 20 bugs.
+Bugs reproduce every 111 'age'
+Bugs can't die between 0 and 100 'distance'
+Bugs loop back to 0 distance when they hit 1000.
+Black dot's appear at a frequency relative to how many bugs are alive.
+
+<h2>
+All behaviour you see below is emergent.
+Bugs are not coded to jump when near a dot.
+This is emergent behaviour due to natural selection.
+</h2>
+
+Sim will run at 'realtime' when a live bug gets further than any bug in history,
+and will jump to hyperspeed when it dies.
+Hyperspeed runs as many ticks as it can in 50ms per timeout defer.
+Evolution progress is cpu-bound.
+</p>
 <script src="test.browser.js"></script>

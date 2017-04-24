@@ -1,0 +1,19 @@
+{
+  "name": "evolution",
+  "version": "1.0.0",
+  "description": "my first go at a neural network evolutionary AI.",
+  "main": "index.js",
+  "scripts": {
+    "watch": "watchify test.js -o test.browser.js -d"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KoryNunn/evolution.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KoryNunn/evolution/issues"
+  },
+  "homepage": "https://github.com/KoryNunn/evolution#readme"
+}

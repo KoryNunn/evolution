@@ -1,5 +1,7 @@
 module.exports = function(simSettings){
+    var menu = document.createElement('div');
     var toggle = document.createElement('button');
+    menu.appendChild(toggle);
 
     toggle.textContent = 'Realtime';
 
@@ -8,6 +10,13 @@ module.exports = function(simSettings){
     });
 
     window.addEventListener('load', function(){
-        document.body.appendChild(toggle);
+        document.body.appendChild(menu);
     });
+
+    function run(){
+        toggle.textContent = simSettings.realtime ? 'Real Time' : 'Hyperspeed';
+        requestAnimationFrame(run);
+    }
+
+    run();
 };
