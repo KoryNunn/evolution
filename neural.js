@@ -2,6 +2,9 @@ var methods = {
     multiply: function(a, b){
         return a * b;
     },
+    divide: function(a, b){
+        return a / b;
+    },
     add: function(a, b){
         return a + b;
     },
@@ -21,11 +24,13 @@ function makeNeuron(neurons, settings){
         inputIndicies = settings.inputIndicies.slice();
 
     var neuron = function(){
-        var result = inputIndicies.reduce(function(result, index){
-            return result + Math.pow(neurons[index](), 2);
-        }, 0);
+        // var result = Math.pow(inputIndicies.reduce(function(result, index){
+        //     return result + Math.pow(neurons[index](), 2);
+        // }, 0), 0.5);
 
-        result = Math.pow(result, 1/2);
+        var result = inputIndicies ? inputIndicies.reduce(function(result, index){
+            return result + neurons[index]();
+        }, 0) / inputIndicies.length : 0;
 
         result = methods[settings.method](result, settings.modifier);
 

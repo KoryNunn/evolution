@@ -16,8 +16,11 @@ module.exports = function(state){
     stats.textContent = [
         'Ticks: ' + state.ticks,
         'Bugs: ' + state.bugs.length,
+        'Max Current Age: ' + state.bugs.reduce(function(result, bug){
+            return Math.max(bug.age, result);
+        }, 0),
         'Max Age: ' + state.bestBug.age,
-        'neurons: ' + JSON.stringify(state.bestBug.neurons.map(function(neuron){
+        'Best Bugs Brain: ' + JSON.stringify(state.bestBug.neurons.map(function(neuron){
             return neuron.settings;
         }), null, 4)
     ].join('\n');
@@ -38,6 +41,9 @@ module.exports = function(state){
     state.bugs.map(function(bug){
         context.fillRect(bug.distance, renderHeight - 10 - (bug.height * 10), 10, 10);
     });
+
+    context.fillStyle = 'hsl(' + (state.bestBug.age / 20).toString() + ', 100%, 30%)';
+    context.fillRect(state.bestBug.distance, renderHeight - 10 - (state.bestBug.height * 10), 10, 10);
 
     context.closePath();
 };

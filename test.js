@@ -5,11 +5,8 @@ var input = require('./input')(simSettings);
 var previousNeuronSettings = [];
 
 var inputs = {
-    distFromFirstDot: function(){
-        return this.dotDists[0] == null ? -1 : this.dotDists[0];
-    },
-    distFromSecondDot: function(){
-        return this.dotDists[1] == null ? -1 : this.dotDists[1];
+    age: function(){
+        return this.age;
     },
     height: function(){
         return this.height;
@@ -19,13 +16,23 @@ var inputs = {
     }
 };
 
+function createEyeInput(index){
+    return function(){
+        return this.dotPositions[index] ? 1 : 0;
+    };
+}
+
+for(var i = 0; i < 20; i++){
+    inputs['next' + i] = createEyeInput(i);
+}
+
 function createConnections(maxConnections, maxIndex){
     var result = [];
 
-    var connections = Math.max(parseInt((Math.random() * maxConnections) % maxConnections), Object.keys(inputs).length);
+    var connections = Math.max(parseInt((Math.random() * maxConnections) % maxConnections), 1);
 
     while(connections--){
-        result.push(parseInt(Math.random() * maxIndex));
+        result.push(parseInt(Math.random() * maxIndex) % maxIndex);
     }
 
     return result;
@@ -35,7 +42,7 @@ var methods = neural.methods;
 
 function randomNeurons(){
     var neurons = [];
-    for(var j = 0; j < 10; j++){
+    for(var j = 0; j < 20; j++){
         var methodIndex = parseInt(Math.random() * methods.length) % methods.length;
         neurons.push({
             method: methods[methodIndex],
@@ -71,6 +78,12 @@ function createBug(previousNeuronSettings){
     return bug;
 }
 
+function createChild(bug){
+    return createBug(bug.neurons.map(function(neuron){
+        return neuron.settings;
+    }));
+}
+
 var map = [];
 
 for(var i = 0; i < 120; i++){
@@ -87,7 +100,9 @@ var bestBug;
 function gameLoop(){
     ticks++;
     if(bugs.length < 20){
-        bugs.push(createBug(randomNeurons()));
+        bestBug ?
+            bugs.push(Math.random() > 0.5 ? createChild(bestBug) : createBug(randomNeurons())) :
+            bugs.push(createBug(randomNeurons()));
     }
 
     map.shift();
@@ -108,13 +123,11 @@ function gameLoop(){
         }
 
         if(bug.distance && !(bug.distance % 111) && bug.age > 300){
-            survivors.push(createBug(bug.neurons.map(function(neuron){
-                return neuron.settings;
-            })));
+            survivors.push(createChild(bug));
         }
 
         //on dot, die
-        if(bug.distance > 100 && bug.height < 1 && bug.distFromDot === 0){
+        if(bug.distance > 100 && bug.height < 1 && bug.onDot){
             if(bug === bestBug){
                 simSettings.realtime = false;
             }
@@ -127,15 +140,8 @@ function gameLoop(){
         bug.height += bug.thrust;
         bug.height = Math.max(0, bug.height -= 0.5);
         var mapPosition = parseInt(bug.distance / 10);
-        bug.dotDists = map.slice(mapPosition, mapPosition + 10)
-            .map(function(dot, index){
-                return dot && index;
-            })
-            .filter(function(distance){
-                return typeof distance === 'number';
-            });
-
-        bug.distFromDot = bug.dotDists.length ? bug.dotDists[0] : -1;
+        bug.dotPositions = map.slice(mapPosition, mapPosition + 20);
+        bug.onDot = bug.dotPositions[0];
 
         if(!bug.height && bug.energy > 0.2){
             var thrust = bug.outputs.thrust();
@@ -154,7 +160,7 @@ function gameLoop(){
         if(innerRuns--){
             gameLoop();
         }else{
-            innerRuns = 100;
+            innerRuns = 1000;
             setTimeout(gameLoop, 0);
         }
         return;
