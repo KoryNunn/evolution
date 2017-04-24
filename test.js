@@ -22,7 +22,7 @@ var inputs = {
 function createConnections(maxConnections, maxIndex){
     var result = [];
 
-    var connections = parseInt(Math.random() * maxConnections);
+    var connections = Math.max(parseInt(Math.random() * maxConnections), Object.keys(inputs).length);
 
     while(connections--){
         result.push(parseInt(Math.random() * maxIndex));
@@ -36,11 +36,11 @@ var methods = ['add', 'multiply', 'power', 'mod'];
 function randomNeurons(){
     var neurons = [];
     for(var j = 0; j < 10; j++){
-        var methodIndex = parseInt(Math.random() * methods.length);
+        var methodIndex = parseInt(Math.random() * methods.length) % methods.length;
         neurons.push({
             method: methods[methodIndex],
             modifier: Math.random(),
-            inputIndicies: createConnections(4, j + Object.keys(inputs).length)
+            inputIndicies: createConnections(5, j + Object.keys(inputs).length)
         });
     }
 
@@ -53,7 +53,7 @@ for(var i = 0; i < 20; i++){
 
 function createBug(previousNeuronSettings){
     var bug = neural({
-        mutation: 0.01,
+        mutation: 0.001,
         inputs: inputs,
         outputs: {
             thrust: true
@@ -86,7 +86,7 @@ var innerRuns = 1;
 var bestBug;
 function gameLoop(){
     ticks++;
-    if(bugs.length < 40){
+    if(bugs.length < 10){
         bugs.push(createBug(randomNeurons()));
     }
 
@@ -107,7 +107,7 @@ function gameLoop(){
             bug.distance = 0;
         }
 
-        if(bug.distance && !(bug.distance % 111)){
+        if(bug.distance && !(bug.distance % 111) && bug.age > 300){
             survivors.push(createBug(bug.neurons.map(function(neuron){
                 return neuron.settings;
             })));
