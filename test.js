@@ -111,7 +111,7 @@ function gameLoop(){
     map.shift();
     map.push(map.slice(-10).some(x => x) ? false : Math.random() < bugs.length / 2000);
 
-    survivors = [];
+    var survivors = [];
     for(var i = 0; i < bugs.length; i++){
         var bug = bugs[i];
         bug.age++;
