@@ -99,6 +99,7 @@ var renderer = require('./render');
 var ticks = 0;
 var looping;
 var bestBug;
+var itterationsPer50 = 0;
 function gameLoop(){
     ticks++;
     if(bugs.length < 20){
@@ -110,7 +111,9 @@ function gameLoop(){
     map.shift();
     map.push(map.slice(-10).some(x => x) ? false : Math.random() < bugs.length / 2000);
 
-    bugs = bugs.reduce(function(survivors, bug){
+    survivors = [];
+    for(var i = 0; i < bugs.length; i++){
+        var bug = bugs[i];
         bug.age++;
         bug.distance += bug.thrustX + 1;
 
@@ -132,7 +135,7 @@ function gameLoop(){
             if(bug === bestBug){
                 simSettings.realtime = false;
             }
-            return survivors;
+            continue;
         }
 
         survivors.push(bug);
@@ -162,9 +165,9 @@ function gameLoop(){
         if(bug.thrustX > 0.1 || bug.thrustX < -0.1){
             bug.thrustX *= 0.9;
         }
+    }
 
-        return survivors;
-    }, []);
+    bugs = survivors;
 
     if(looping){
         return;
@@ -173,7 +176,9 @@ function gameLoop(){
     if(!simSettings.realtime){
         looping = true;
         var start = Date.now();
+        itterationsPer50 = 0;
         while(Date.now() - start < 50){
+            itterationsPer50++;
             gameLoop();
             if(simSettings.realtime){
                 break;
@@ -189,7 +194,7 @@ function gameLoop(){
 }
 
 function render(){
-    renderer({ ticks, bugs, map, bestBug });
+    renderer({ ticks, bugs, map, bestBug, itterationsPer50 });
     requestAnimationFrame(render);
 }
 

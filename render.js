@@ -19,6 +19,7 @@ module.exports = function(state){
 
     stats.textContent = [
         'Ticks: ' + state.ticks,
+        'Itterations Per 50ms run: ' + state.itterationsPer50,
         'Bugs: ' + state.bugs.length,
         'Max Current Age: ' + (currentBestBug ? currentBestBug.age : 'Nothing alive'),
         'Max Age: ' + state.bestBug.age,

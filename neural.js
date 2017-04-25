@@ -31,9 +31,12 @@ function makeNeuron(neurons, settings){
         //     return result + Math.pow(neurons[index](), 2);
         // }, 0), 0.5);
 
-        var result = inputIndicies ? inputIndicies.reduce(function(result, index){
-            return result + neurons[index]();
-        }, 0) / inputIndicies.length : 0;
+        var result = 0;
+        if(inputIndicies){
+            for(var i = 0; i < inputIndicies.length; i++){
+                result += neurons[i]()
+            }
+        }
 
         result = methods[settings.method](result, settings.modifier);
 
