@@ -20,7 +20,7 @@ module.exports = function(state){
     stats.textContent = [
         'Ticks: ' + state.ticks,
         'Bugs: ' + state.bugs.length,
-        'Max Current Age: ' + currentBestBug ? currentBestBug.age : 'Nothing alive',
+        'Max Current Age: ' + (currentBestBug ? currentBestBug.age : 'Nothing alive'),
         'Max Age: ' + state.bestBug.age,
         'Best Bugs Brain: ' + JSON.stringify(state.bestBug.neurons.map(function(neuron){
             return neuron.settings;
