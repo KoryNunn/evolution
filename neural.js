@@ -23,8 +23,7 @@ var methods = {
 };
 
 function makeNeuron(neurons, settings){
-    var inputs = [],
-        inputIndicies = settings.inputIndicies.slice();
+    var inputIndicies = settings.inputIndicies.slice();
 
     var neuron = function(){
         // var result = Math.pow(inputIndicies.reduce(function(result, index){
@@ -34,9 +33,13 @@ function makeNeuron(neurons, settings){
         var result = 0;
         if(inputIndicies){
             for(var i = 0; i < inputIndicies.length; i++){
-                result += neurons[i]()
+                result += neurons[inputIndicies[i]]();
             }
+            result /= inputIndicies.length;
         }
+        // var result = inputIndicies ? inputIndicies.reduce(function(result, index){
+        //     return result + neurons[index]();
+        // }, 0) / inputIndicies.length : 0;
 
         result = methods[settings.method](result, settings.modifier);
 
