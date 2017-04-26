@@ -1,5 +1,5 @@
 var neural = require('./neural');
-var simSettings = { realtime: false };
+var simSettings = { realtime: false, neuronCount: 20 };
 var input = require('./input')(simSettings);
 
 var previousNeuronSettings = [];
@@ -42,7 +42,7 @@ var methods = neural.methods;
 
 function randomNeurons(){
     var neurons = [];
-    for(var j = 0; j < 20; j++){
+    for(var j = 0; j < simSettings.neuronCount; j++){
         var methodIndex = parseInt(Math.random() * methods.length) % methods.length;
         neurons.push({
             method: methods[methodIndex],

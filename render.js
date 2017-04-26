@@ -12,6 +12,20 @@ var renderWidth = 1100;
 canvas.height = renderHeight;
 canvas.width = renderWidth;
 
+var lastBestBug = null,
+    lastBestBugJSON;
+
+function getBestBugJSON(bestBug){
+    if(lastBestBug === bestBug){
+        return lastBestBugJSON;
+    }
+
+    lastBestBug = bestBug;
+
+    return lastBestBugJSON = JSON.stringify(bestBug.neurons.map(function(neuron){
+        return neuron.settings;
+    }), null, 4);
+}
 module.exports = function(state){
     var currentBestBug = state.bugs.reduce(function(result, bug){
         return bug.age > result.age ? bug : result;
@@ -23,9 +37,7 @@ module.exports = function(state){
         'Bugs: ' + state.bugs.length,
         'Max Current Age: ' + (currentBestBug ? currentBestBug.age : 'Nothing alive'),
         'Max Age: ' + state.bestBug.age,
-        'Best Bugs Brain: ' + JSON.stringify(state.bestBug.neurons.map(function(neuron){
-            return neuron.settings;
-        }), null, 4)
+        'Best Bugs Brain: ' + getBestBugJSON(state.bestBug)
     ].join('\n');
     context.clearRect(0, 0, renderWidth, renderHeight);
 
