@@ -47,7 +47,7 @@ function randomNeurons(){
         neurons.push({
             method: methods[methodIndex],
             modifier: Math.random(),
-            inputIndicies: createConnections(5, j + Object.keys(inputs).length)
+            inputIndicies: createConnections(6, j + Object.keys(inputs).length)
         });
     }
 
@@ -75,6 +75,7 @@ function createBug(previousNeuronSettings){
     bug.thrustX = 0;
     bug.thrustY = 0;
     bug.distance = 0;
+    bug.totalDistance = 0;
     bug.distFromDot = -1;
 
     return bug;
@@ -104,20 +105,21 @@ function gameLoop(){
     ticks++;
     if(bugs.length < 20){
         bestBug ?
-            bugs.push(Math.random() > 0.5 ? createChild(bestBug) : createBug(randomNeurons())) :
+            bugs.push(Math.random() > 0.9 ? createChild(bestBug) : createBug(randomNeurons())) :
             bugs.push(createBug(randomNeurons()));
     }
 
     map.shift();
-    map.push(map.slice(-10).some(x => x) ? false : Math.random() < bugs.length / 2000);
+    map.push(map.slice(-5).some(x => x) ? false : Math.random() < bugs.length / 2000);
 
     var survivors = [];
     for(var i = 0; i < bugs.length; i++){
         var bug = bugs[i];
         bug.age++;
         bug.distance += bug.thrustX + 1;
+        bug.totalDistance += bug.thrustX + 1;
 
-        if(!bestBug || bug.age > bestBug.age){
+        if(!bestBug || bug.totalDistance > bestBug.totalDistance){
             simSettings.realtime = true;
             bestBug = bug;
         }
@@ -147,18 +149,17 @@ function gameLoop(){
         bug.dotPositions = map.slice(mapPosition, mapPosition + 20);
         bug.onDot = bug.dotPositions[0];
 
-        if(!bug.height){
-            if(bug.energy > 0.2){
-                var thrustY = bug.outputs.thrustY();
-                bug.thrustY += Math.min(thrustY, bug.energy);
-                bug.energy = Math.max(0, bug.energy - bug.thrustY);
-
-                var thrustX = bug.outputs.thrustX();
-                bug.thrustX += Math.min(thrustX, bug.energy);
-                bug.energy = Math.max(0, bug.energy - bug.thrustX);
-            }
-            bug.energy = Math.min(1, bug.energy + 0.1);
+        if(bug.energy > 0.2){
+            var thrustY = bug.outputs.thrustY();
+            bug.thrustY += Math.min(thrustY, bug.energy);
+            bug.energy = Math.max(0, bug.energy - bug.thrustY);
         }
+        if(bug.energy > 0){
+            var thrustX = bug.outputs.thrustX();
+            bug.thrustX += Math.min(thrustX, bug.energy);
+            bug.energy = Math.max(0, bug.energy - bug.thrustX);
+        }
+        bug.energy = Math.min(1, bug.energy + 0.07);
         if(bug.thrustY > 0){
             bug.thrustY -= 0.1;
         }
