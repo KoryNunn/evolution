@@ -1454,7 +1454,6 @@ function spawnChildFromSex(parentOne, parentTwo){
         }
     }
 
-    console.log("SEXY TIME");
     return createBug(newChildSettings);
 }
 
@@ -1512,7 +1511,9 @@ function gameLoop(){
         }
 
         if(bug.age && !(bug.age % 111) && bug.age > 300){
-            //survivors.push(createChild(bug));
+            if (bugs.length > 1) {
+                bugs.push(spawnChildFromSex(bestBug, findABugAWife(bestBug, bugs)));
+            }
         }
 
         //on dot, die
@@ -1554,7 +1555,8 @@ function gameLoop(){
 
     bugs = survivors;
 
-    bugs.push(createBug(randomNeurons()));
+    //bugs.push(createBug(randomNeurons()));
+
 
     if(looping){
         return;
