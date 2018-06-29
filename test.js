@@ -1,6 +1,9 @@
 var neural = require('./neural');
 var simSettings = { realtime: false, neuronCount: 20 };
 var input = require('./input')(simSettings);
+var Random = require("random-js");
+var clone = require("clone");
+
 
 var previousNeuronSettings = [];
 
@@ -86,6 +89,41 @@ function createChild(bug){
     }));
 }
 
+function spawnChildFromSex(parentOne, parentTwo){
+    var newChildSettings = [];
+    var parentOneContribution = [...Array(20).keys()];
+    var parentTwoContribution = [];
+
+    for(var k = 0; k < 10; k++){
+        Random.shuffle(Random.engines.browserCrypto, parentOne);
+        parentTwoContribution.push(parentOneContribution.pop());
+    }
+
+    for(var l = 0; l < 20; l++){
+        if (parentOneContribution.indexOf(l) > -1) {
+             newChildSettings.push(parentOne.neurons[l].settings);
+        } else {
+            newChildSettings.push(parentTwo.neurons[l].settings);
+        }
+    }
+
+    console.log("SEXY TIME");
+    return createBug(newChildSettings);
+}
+
+function findABugAWife(suitor, bugs){
+    //find me a random bug that isn't best bug?
+    var collection = bugs.reduce((accumulator, currentBug, currentIndex) => {
+        if (currentBug.age !== bestBug.age) {
+            accumulator.push(currentIndex);
+        }
+
+        return accumulator;
+    },[]);
+
+    return bugs[Random.shuffle(Random.engines.browserCrypto,collection)[0]];
+}
+
 var map = [];
 
 for(var i = 0; i < 120; i++){
@@ -104,7 +142,7 @@ function gameLoop(){
     ticks++;
     if(bugs.length < 20){
         bestBug ?
-            bugs.push(Math.random() > 0.5 ? createChild(bestBug) : createBug(randomNeurons())) :
+            bugs.push(Math.random() > 0.5 && bugs.length > 1 ? spawnChildFromSex(bestBug, findABugAWife(bestBug, bugs)): createBug(randomNeurons())) :
             bugs.push(createBug(randomNeurons()));
     }
 
@@ -127,7 +165,7 @@ function gameLoop(){
         }
 
         if(bug.age && !(bug.age % 111) && bug.age > 300){
-            survivors.push(createChild(bug));
+            //survivors.push(createChild(bug));
         }
 
         //on dot, die
@@ -168,6 +206,8 @@ function gameLoop(){
     }
 
     bugs = survivors;
+
+    bugs.push(createBug(randomNeurons()));
 
     if(looping){
         return;
