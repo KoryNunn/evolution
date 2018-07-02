@@ -94,16 +94,17 @@ function spawnChildFromSex(parentOne, parentTwo, tick){
     var parentOneContribution = [...Array(20).keys()];
     var parentTwoContribution = [];
 
-    for(var k = 0; k < 10; k++){
-        Random.shuffle(Random.engines.browserCrypto, parentOne);
+    Random.shuffle(Random.engines.browserCrypto, parentOne);
+    
+    for(var i = 0; i < (simSettings.neuronCount / 2); i++){
         parentTwoContribution.push(parentOneContribution.pop());
     }
 
-    for(var l = 0; l < 20; l++){
-        if (parentOneContribution.indexOf(l) > -1) {
-             newChildSettings.push(parentOne.neurons[l].settings);
+    for(var j = 0; j < simSettings.neuronCount; j++){
+        if (parentOneContribution.indexOf(j) > -1) {
+            newChildSettings.push(parentOne.neurons[j].settings);
         } else {
-            newChildSettings.push(parentTwo.neurons[l].settings);
+            newChildSettings.push(parentTwo.neurons[j].settings);
         }
     }
 
