@@ -19,6 +19,18 @@ var methods = {
     },
     invert: function(a, b){
         return Math.abs(a * -b);
+    },
+    sin: function(a, b){
+        return Math.sin(Math.PI * a / b);
+    },
+    cos: function(a, b){
+        return Math.cos(Math.PI * a / b);
+    },
+    tan: function(a, b){
+        return Math.tan(Math.PI * a / b);
+    },
+    log: function(a, b){
+        return Math.log(a, b);
     }
 };
 

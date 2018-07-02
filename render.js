@@ -31,11 +31,22 @@ module.exports = function(state){
         return bug.age > result.age ? bug : result;
     }, state.bugs[0]);
 
+    var currentLineages = state.bugs.reduce(function(result, bug){
+        if (result.indexOf(bug.paternalLineage) === -1) {
+            result.push(bug.paternalLineage);
+        }
+
+        return result;
+    }, []);
+
     stats.textContent = [
         'Ticks: ' + state.ticks,
         'Itterations Per 50ms run: ' + state.itterationsPer50,
         'Bugs: ' + state.bugs.length,
         'Max Current Age: ' + (currentBestBug ? currentBestBug.age : 'Nothing alive'),
+        'Current Best Bug Lineage: ' + (currentBestBug ? `${ currentBestBug.paternalLineage.id } (age: ${state.ticks - currentBestBug.paternalLineage.tick})` : 'None'),
+        'Current Lineages: ',
+        ...currentLineages.map(function(lineage){ return `${ lineage.id } (age: ${state.ticks - lineage.tick})`; }),
         'Max Age: ' + state.bestBug.age,
         'Best Bugs Brain: ' + getBestBugJSON(state.bestBug)
     ].join('\n');
