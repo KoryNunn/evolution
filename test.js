@@ -98,7 +98,7 @@ function spawnChildFromSex(parentOne, parentTwo, tick){
     var parentTwoContribution = [];
 
     Random.shuffle(Random.engines.browserCrypto, parentOne);
-    
+
     for(var i = 0; i < (simSettings.neuronCount / 2); i++){
         parentTwoContribution.push(parentOneContribution.pop());
     }
@@ -146,12 +146,15 @@ var itterationsPer50 = 0;
 function gameLoop(){
     ticks++;
     if(bugs.length < 20){
-        bestBug ?
-            bugs.push(Math.random() > 0.5 && bugs.length > 1 && bugs.some((bug) => { return bug.neurons.length === simSettings.neuronCount; }) ? spawnChildFromSex(bestBug, findABugAPartner(bestBug, bugs), ticks): createBug(randomNeurons(), null, ticks)) :
-            bugs.push(createBug(randomNeurons(), null, ticks));
-    }
+        var newBug;
+        if(bestBug && Math.random() > 0.5 && bugs.length > 1 && bugs.some((bug) => { return bug.neurons.length === simSettings.neuronCount; })){
+            newBug = spawnChildFromSex(bestBug, findABugAPartner(bestBug, bugs), ticks);
+        } else {
+            newBug = createBug(randomNeurons(), null, ticks);
+        }
 
-    bugs = bugs.filter((bug) => {return bug});
+        bugs.push(newBug);
+    }
 
     map.shift();
     map.push(map.slice(-10).some(x => x) ? false : Math.random() < bugs.length / 2000);
