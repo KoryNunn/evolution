@@ -28,6 +28,9 @@ function getBestBugJSON(bestBug){
 }
 module.exports = function(state){
     var currentBestBug = state.bugs.reduce(function(result, bug){
+        if (!bug) {
+            return result;
+        }
         return bug.age > result.age ? bug : result;
     }, state.bugs[0]);
 
