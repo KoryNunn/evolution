@@ -21,5 +21,8 @@
     "crel": "^3.0.1",
     "npm": "^6.1.0",
     "random-js": "^1.0.8"
+  },
+  "devDependencies": {
+    "watchify": "^3.11.0"
   }
 }
