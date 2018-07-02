@@ -7,7 +7,7 @@ read an article/paper on neural networks if you want to learn your self.
 
 # Run it
 
-(korynunn.github.io/evolution)
+[korynunn.github.io/evolution]
 
 # run
 
