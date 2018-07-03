@@ -93,6 +93,7 @@ function spawnChildFromSex(parentOne, parentTwo, tick){
     if (parentOne.neurons.length !== simSettings.neuronCount || parentTwo.neurons.length !== simSettings.neuronCount) {
         return;
     }
+
     var newChildSettings = [];
     var parentOneContribution = [...Array(parentOne.neurons.length).keys()];
     var parentTwoContribution = [];
@@ -175,11 +176,9 @@ function gameLoop(){
         }
 
         if(bug.age && !(bug.age % 111) && bug.age > 300){
-            if (bugs.length > 1) {
-                bugs.push(spawnChildFromSex(bestBug, findABugAPartner(bestBug, bugs)));
+            var partner = findABugAPartner(bestBug, bugs) || createBug(randomNeurons(), null, ticks);
 
-                bugs = bugs.filter((bug) => {return bug});
-            }
+            bugs.push(spawnChildFromSex(bestBug, partner));
         }
 
         //on dot, die
