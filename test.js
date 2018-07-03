@@ -56,7 +56,7 @@ function randomNeurons(){
     return neurons;
 }
 
-for(var i = 0; i < 20; i++){
+for(var i = 0; i < simSettings.neuronCount; i++){
     previousNeuronSettings.push(randomNeurons());
 }
 
@@ -90,12 +90,16 @@ function createChild(bug){
 }
 
 function spawnChildFromSex(parentOne, parentTwo, tick){
+    if (parentOne.neurons.length !== simSettings.neuronCount || parentTwo.neurons.length !== simSettings.neuronCount) {
+        return;
+    }
+
     var newChildSettings = [];
-    var parentOneContribution = [...Array(20).keys()];
+    var parentOneContribution = [...Array(parentOne.neurons.length).keys()];
     var parentTwoContribution = [];
 
     Random.shuffle(Random.engines.browserCrypto, parentOne);
-    
+
     for(var i = 0; i < (simSettings.neuronCount / 2); i++){
         parentTwoContribution.push(parentOneContribution.pop());
     }
@@ -116,7 +120,7 @@ function spawnChildFromSex(parentOne, parentTwo, tick){
 function findABugAPartner(suitor, bugs){
     //find me a random bug that isn't best bug?
     var collection = bugs.reduce((accumulator, currentBug, currentIndex) => {
-        if (currentBug.age !== suitor.age) {
+        if (currentBug.age !== suitor.age && currentBug.neurons.length === suitor.neurons.length) {
             accumulator.push(currentIndex);
         }
 
@@ -143,9 +147,14 @@ var itterationsPer50 = 0;
 function gameLoop(){
     ticks++;
     if(bugs.length < 20){
-        bestBug ?
-            bugs.push(Math.random() > 0.5 && bugs.length > 1 ? spawnChildFromSex(bestBug, findABugAPartner(bestBug, bugs), ticks): createBug(randomNeurons(), null, ticks)) :
-            bugs.push(createBug(randomNeurons(), null, ticks));
+        var newBug;
+        if(bestBug && Math.random() > 0.5 && bugs.length > 1 && bugs.some((bug) => { return bug.neurons.length === simSettings.neuronCount; })){
+            newBug = spawnChildFromSex(bestBug, findABugAPartner(bestBug, bugs), ticks);
+        } else {
+            newBug = createBug(randomNeurons(), null, ticks);
+        }
+
+        bugs.push(newBug);
     }
 
     map.shift();
@@ -167,9 +176,9 @@ function gameLoop(){
         }
 
         if(bug.age && !(bug.age % 111) && bug.age > 300){
-            if (bugs.length > 1) {
-                bugs.push(spawnChildFromSex(bestBug, findABugAPartner(bestBug, bugs)));
-            }
+            var partner = findABugAPartner(bestBug, bugs) || createBug(randomNeurons(), null, ticks);
+
+            bugs.push(spawnChildFromSex(bestBug, partner));
         }
 
         //on dot, die
