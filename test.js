@@ -148,9 +148,12 @@ function gameLoop(){
     ticks++;
     if(bugs.length < 20){
         var newBug;
-        if(bestBug && Math.random() > 0.5 && bugs.length > 1 && bugs.some((bug) => { return bug.neurons.length === simSettings.neuronCount; })){
+
+        if(bestBug && Math.random() > 0.5 && bugs.length > 1){
             newBug = spawnChildFromSex(bestBug, findABugAPartner(bestBug, bugs), ticks);
-        } else {
+        }
+
+        if (!newBug) {
             newBug = createBug(randomNeurons(), null, ticks);
         }
 
